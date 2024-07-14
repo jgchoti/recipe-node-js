@@ -28,7 +28,7 @@ const recipeControllers = {
         }
     },
 
-    getRecipeByName: async (req, res) => {
+    getRecipesByName: async (req, res) => {
         const { q } = req.query;
         let recipes = []
         console.log(q);
@@ -61,13 +61,13 @@ const recipeControllers = {
             const sql = 'INSERT INTO recipes (name, description) VALUES(?, ?)';
             const values = [name, description || null];
 
-            const recipes = await query(sql, values);
-            const insertedRecipeId = recipes.insertId;
+            const result = await query(sql, values);
+            const insertedRecipeId = result.insertId;
             console.log(insertedRecipeId)
             const fetchSql = 'SELECT * FROM recipes WHERE id = ?';
             const newRecipes = await query(fetchSql, [insertedRecipeId]);
             res.status(201).json({
-                recipe: newRecipes[0], message: `"${newRecipes[0].name}" Recipe is added successfully`
+                recipe: newRecipes[0], message: `"${newRecipes[0].name}" Recipe is added successfully`, result: result
             });
 
         } catch (error) {
@@ -94,14 +94,14 @@ const recipeControllers = {
             sql = sql.slice(0, -2);
             sql += ' WHERE id = ?';
             values.push(id);
-            const recipe = await query(sql, values);
-            if (recipe.affectedRows === 0) {
+            const result = await query(sql, values);
+            if (result.affectedRows === 0) {
                 return res.status(404).json({ error: 'Recipe not found' });
             }
             const fetchSql = 'SELECT * FROM recipes WHERE id = ?';
             const updatedRecipe = await query(fetchSql, [id]);
 
-            res.status(200).json({ message: 'Recipe updated successfully', recipe: updatedRecipe[0] });
+            res.status(200).json({ recipe: updatedRecipe[0], message: 'Recipe updated successfully', result: result });
         } catch (error) {
             console.error('Error updating recipe:', error);
             res.status(500).json({ error: 'Error updating recipe' });
@@ -117,10 +117,8 @@ const recipeControllers = {
                 return res.status(404).json({ error: 'Recipe not found' });
             }
             const deleteSql = 'DELETE FROM recipes WHERE id = ?';
-            await query(deleteSql, [id]);
-            const fetchSql = 'SELECT * FROM recipes';
-            const updatedRecipes = await query(fetchSql);
-            res.status(200).json({ message: `"${selectRecipe[0].name}" is deleted successfully`, recipeId: id, recipes: updatedRecipes });
+            const result = await query(deleteSql, [id]);
+            res.status(200).json({ message: `"${selectRecipe[0].name}" is deleted successfully`, recipeId: id, result: result });
         }
 
         catch (error) {
