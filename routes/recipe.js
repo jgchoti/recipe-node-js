@@ -8,14 +8,14 @@ const router = express.Router();
 // get recipes
 router.get('/recipes', recipeControllers.getAllRecipes);
 router.get('/recipes/:id', recipeControllers.getRecipeByID);
-router.get('/search', recipeControllers.getRecipeByName);
+router.get('/search', recipeControllers.getRecipesByName);
 
 // add recipes
-router.post('/recipes', recipeControllers.postRecipe);
+router.post('/recipes', verifyToken, recipeControllers.postRecipe);
 // update recipes
-router.put('/recipes/:id', recipeControllers.updateRecipe);
+router.put('/recipes/:id', verifyToken, recipeControllers.updateRecipe);
 // delete recipes
-router.delete('/recipes/:id', recipeControllers.deleteRecipe);
+router.delete('/recipes/:id', verifyToken, recipeControllers.deleteRecipe);
 
 
 export default router;
