@@ -28,8 +28,8 @@ const userControllers = {
         }
 
         const hashedPassword = await hashPassword(password);
-        const sql2 = 'INSERT INTO users (name, email, password) VALUES (?, ?, ?)';
-        const result = await query(sql2, [name, email, hashedPassword]);
+        const insertSql = 'INSERT INTO users (name, email, password) VALUES (?, ?, ?)';
+        const result = await query(insertSql, [name, email, hashedPassword]);
         if (result.affectedRows === 0) {
             return res.status(400).json({ error: 'Cannot add  the user' });
         } else {
